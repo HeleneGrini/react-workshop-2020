@@ -5,7 +5,7 @@ export const Error = () => {
   return (
     <div>
       <h4>Oi, noe gikk galt!</h4>
-      <button className="btn btn-waning" onClick={() => router.push("/")}>
+      <button className="btn btn-warning" onClick={() => router.push("/")}>
         Gå til forsiden
       </button>
     </div>
