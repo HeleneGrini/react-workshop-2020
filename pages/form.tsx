@@ -4,6 +4,7 @@ import { Error } from "../components/Error";
 import { Loading } from "../components/Loading";
 import { Form } from "../components/Form";
 import { useRouter } from "next/router";
+import { useForm } from "../utils/useForm";
 
 const initialValues = {
   name: "",
@@ -18,53 +19,29 @@ const initialValues = {
 export type Values = typeof initialValues;
 
 export default () => {
-  const [values, setValues] = useState(initialValues);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [response, setResponse] = useState(undefined);
   const router = useRouter();
-
-  const setFieldValue = (
-    key: keyof typeof values,
-    e: ChangeEvent<HTMLInputElement>
-  ) => {
-    setValues({ ...values, [key]: e.target.value });
-  };
-  const resetForm = () => setValues(initialValues);
-  const postForm = async () => {
-    setLoading(true);
-    setError(false);
-    setResponse(undefined);
-    await fetch("api/form", {
-      method: "POST",
-      body: JSON.stringify(values),
-    })
-      .then((r) => r.json())
-      .then((data) => setResponse(data))
-      .catch((err) => setError(true));
-    setLoading(false);
-  };
+  const form = useForm({
+    initialValues,
+    validatons: {
+      phoneNumber: (values) => values.phoneNumber.length >= 8,
+    },
+    endpoint: "api/form",
+  });
+  const { submitError, submitResponse, submitLoading } = form;
 
   useEffect(() => {
-    if (!error && response) {
+    if (!submitError && submitResponse) {
       router.push("/forms");
     }
-  }, [error, response]);
+  }, [submitError, submitError]);
 
   const renderBody = () => {
-    if (loading) {
+    if (submitLoading) {
       return <Loading />;
-    } else if (error) {
+    } else if (submitError) {
       return <Error />;
-    } else if (!response) {
-      return (
-        <Form
-          setFieldValue={setFieldValue}
-          values={values}
-          resetForm={resetForm}
-          postForm={postForm}
-        />
-      );
+    } else if (!submitError) {
+      return <Form form={form} />;
     } else return null;
   };
 

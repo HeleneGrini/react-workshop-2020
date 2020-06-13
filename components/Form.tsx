@@ -1,60 +1,21 @@
 import { Values } from "../pages/form";
 import { ChangeEvent, useState, useEffect } from "react";
+import * as form from "../utils/useForm";
 
 interface Props {
-  values: Values;
-  postForm: () => Promise<void>;
-  resetForm: () => void;
-  setFieldValue: (key: keyof Values, e: ChangeEvent<HTMLInputElement>) => void;
+  form: form.Form<Values>;
 }
 export const Form = (props: Props) => {
-  const { values, postForm, resetForm, setFieldValue } = props;
-  const [errors, setErrors] = useState<{ [key in keyof Values]: boolean }>({
-    name: false,
-    email: false,
-    phoneNumber: false,
-    birthDate: false,
-    picture: false,
-    sex: false,
-    acceptTerms: false,
-  });
-
-  const [touched, setTouched] = useState<{ [key in keyof Values]: boolean }>({
-    name: false,
-    email: false,
-    phoneNumber: false,
-    birthDate: false,
-    picture: false,
-    sex: false,
-    acceptTerms: false,
-  });
-
-  const validatons: {
-    [key in keyof Values]: undefined | ((v: Values) => boolean);
-  } = {
-    name: undefined,
-    email: undefined,
-    phoneNumber: (values) => values.phoneNumber.length > 8,
-    birthDate: undefined,
-    picture: undefined,
-    sex: undefined,
-    acceptTerms: undefined,
-  };
-
-  useEffect(() => {
-    const temp = { ...errors };
-    Object.keys(errors).map((key) => {
-      if (validatons[key] && !validatons[key](values)) {
-        temp[key] = true;
-      } else temp[key] = false;
-    });
-    setErrors(temp);
-  }, [values, touched]);
-
-  const formIsValid = Object.values(errors).reduce(
-    (acc, currentHasError) => (!acc ? acc : !currentHasError),
-    true
-  );
+  const {
+    values,
+    postForm,
+    resetForm,
+    setFieldValue,
+    formIsValid,
+    touched,
+    setTouched,
+    errors,
+  } = props.form;
 
   return (
     <form
