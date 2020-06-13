@@ -40,7 +40,7 @@ const Form = () => {
               </label>
               <label className="d-flex flex-column w-25">
                 <span className="mr-2">Husnummer</span>
-                <input type="text" name="housNumber" />
+                <input type="text" name="houseNumber" />
               </label>
             </div>
             <div className="d-flex">
@@ -56,7 +56,7 @@ const Form = () => {
 
             <label className="d-flex flex-column w-50">
               <span className="mr-2">Last opp et portrettbile</span>
-              <input type="file" name="portrettbile" />
+              <input type="file" name="picture" />
             </label>
 
             <label className="d-flex align-items-center w-50">
