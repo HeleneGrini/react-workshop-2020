@@ -18,14 +18,23 @@ const Form = () => {
   ) => {
     setValues({ ...values, [key]: e.target.value });
   };
+  const resetForm = () => setValues(initialValues);
+  const postForm = async () => {
+    await fetch("api/form", {
+      method: "POST",
+      body: JSON.stringify(values),
+    });
+  };
+
   return (
     <div className="container">
       <h1>Form</h1>
       <form
         method="post"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
-          console.log("submit", values);
+          await postForm();
+          resetForm();
         }}
       >
         <div className="d-flex flex-column">
