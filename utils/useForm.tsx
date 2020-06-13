@@ -83,7 +83,11 @@ export function useForm<T>(options: {
     setSubmitLoading(false);
   };
 
-  const resetForm = () => setValues(options.initialValues);
+  const resetForm = () => {
+    setValues(options.initialValues);
+    setErrors(generateFalsy(values));
+    setTouched(generateFalsy(values));
+  };
 
   return {
     values,
