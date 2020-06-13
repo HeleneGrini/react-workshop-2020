@@ -1,8 +1,9 @@
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect, useReducer } from "react";
 import { Success } from "../components/Success";
 import { Error } from "../components/Error";
 import { Loading } from "../components/Loading";
 import { Form } from "../components/Form";
+import { useRouter } from "next/router";
 
 const initialValues = {
   name: "",
@@ -21,6 +22,7 @@ export default () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [response, setResponse] = useState(undefined);
+  const router = useRouter();
 
   const setFieldValue = (
     key: keyof typeof values,
@@ -43,14 +45,18 @@ export default () => {
     setLoading(false);
   };
 
+  useEffect(() => {
+    if (!error && response) {
+      router.push("/forms");
+    }
+  }, [error, response]);
+
   const renderBody = () => {
     if (loading) {
       return <Loading />;
     } else if (error) {
-      <Error />;
-    } else if (response) {
-      return <Success />;
-    } else {
+      return <Error />;
+    } else if (!response) {
       return (
         <Form
           setFieldValue={setFieldValue}
@@ -59,7 +65,7 @@ export default () => {
           postForm={postForm}
         />
       );
-    }
+    } else return null;
   };
 
   return (
