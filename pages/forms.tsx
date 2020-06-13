@@ -23,8 +23,8 @@ export default () => {
   return (
     <div className="container pt-5">
       <h2>Dine innsendte skjemaer</h2>
-      {forms.map((form) => (
-        <FormListItem form={form} />
+      {forms.map((form, i) => (
+        <FormListItem key={i} form={form} />
       ))}
     </div>
   );

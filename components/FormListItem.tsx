@@ -33,8 +33,8 @@ export function FormListItem<
 
       {open ? (
         <div>
-          {entries.map((entry) => (
-            <div>
+          {entries.map((entry, i) => (
+            <div key={i}>
               {entry[0]}: {entry[1]}
             </div>
           ))}
