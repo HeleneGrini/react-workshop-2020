@@ -33,14 +33,14 @@ export default () => {
     if (!submitError && submitResponse) {
       router.push("/forms");
     }
-  }, [submitError, submitError]);
+  }, [submitError, submitResponse]);
 
   const renderBody = () => {
     if (submitLoading) {
       return <Loading />;
     } else if (submitError) {
       return <Error />;
-    } else if (!submitError) {
+    } else if (!submitLoading && !submitError) {
       return <Form form={form} />;
     } else return null;
   };
