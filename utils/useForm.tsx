@@ -28,7 +28,7 @@ export type Form<T> = {
   submitResponse: any;
   setFieldValue: (key: keyof T, e: ChangeEvent<HTMLInputElement>) => void;
   formIsValid: boolean;
-  postForm: () => Promise<void>;
+  postForm: (values: any) => Promise<void>;
   resetForm: () => void;
 };
 
@@ -62,20 +62,25 @@ export function useForm<T>(options: {
   }, [values, touched]);
 
   const setFieldValue = (key: keyof T, e: ChangeEvent<HTMLInputElement>) => {
-    setValues({ ...values, [key]: e.target.value });
+    if (e.target.type === "file") {
+      setValues({ ...values, [key]: Array.from(e.target.files) });
+    } else {
+      setValues({ ...values, [key]: e.target.value });
+    }
   };
   const formIsValid = Object.values(errors).reduce<boolean>(
     (acc, currentHasError) => (!acc ? acc : !currentHasError),
     true
   );
 
-  const postForm = async () => {
+  const postForm = async (formValues: any) => {
     setSubmitLoading(true);
     setSubmitError(false);
     setSubmitResponse(undefined);
+
     await fetch(options.endpoint, {
       method: "POST",
-      body: JSON.stringify(values),
+      body: JSON.stringify(formValues),
     })
       .then((r) => r.json())
       .then((data) => setSubmitResponse(data))

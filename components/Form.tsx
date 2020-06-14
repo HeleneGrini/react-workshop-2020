@@ -1,9 +1,11 @@
 import { Values } from "../pages/form";
-import { ChangeEvent, useState, useEffect } from "react";
+import { ChangeEvent, useState, useEffect, FormEvent } from "react";
 import * as form from "../utils/useForm";
+import { useFileUpload } from "../utils/useFileUpload";
 
 interface Props {
   form: form.Form<Values>;
+  upload: (file: File) => any;
 }
 export const Form = (props: Props) => {
   const {
@@ -17,15 +19,17 @@ export const Form = (props: Props) => {
     errors,
   } = props.form;
 
+  const uploadPictures = async () =>
+    Promise.all(values.picture.map((pic) => props.upload(pic)));
+
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
+    const urls = await uploadPictures();
+    await postForm({ ...values, picture: urls });
+    resetForm();
+  };
+
   return (
-    <form
-      method="post"
-      onSubmit={async (e) => {
-        e.preventDefault();
-        await postForm();
-        resetForm();
-      }}
-    >
+    <form method="post" onSubmit={submit}>
       <div className="d-flex flex-column">
         <label className="d-flex flex-column w-50">
           <span className="mr-2">Navn</span>
@@ -75,7 +79,6 @@ export const Form = (props: Props) => {
           <input
             type="file"
             name="picture"
-            value={values.picture}
             onChange={(e) => setFieldValue("picture", e)}
           />
         </label>

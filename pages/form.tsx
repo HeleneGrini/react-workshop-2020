@@ -1,17 +1,17 @@
-import { useState, ChangeEvent, useEffect, useReducer } from "react";
-import { Success } from "../components/Success";
+import { useEffect } from "react";
 import { Error } from "../components/Error";
 import { Loading } from "../components/Loading";
 import { Form } from "../components/Form";
 import { useRouter } from "next/router";
 import { useForm } from "../utils/useForm";
+import { useFileUpload } from "../utils/useFileUpload";
 
 const initialValues = {
   name: "",
   email: "",
   phoneNumber: "",
   birthDate: new Date().toISOString().split("T")[0],
-  picture: "",
+  picture: [] as File[],
   sex: "",
   acceptTerms: false,
 };
@@ -20,6 +20,7 @@ export type Values = typeof initialValues;
 
 export default () => {
   const router = useRouter();
+  const fileUpload = useFileUpload();
   const form = useForm({
     initialValues,
     validatons: {
@@ -27,21 +28,24 @@ export default () => {
     },
     endpoint: "api/form",
   });
-  const { submitError, submitResponse, submitLoading } = form;
+
+  const error = form.submitError || fileUpload.error;
+  const loading = form.submitLoading || fileUpload.loading;
+  const redirect = !error && form.submitResponse;
 
   useEffect(() => {
-    if (!submitError && submitResponse) {
+    if (redirect) {
       router.push("/forms");
     }
-  }, [submitError, submitResponse]);
+  }, [redirect]);
 
   const renderBody = () => {
-    if (submitLoading) {
+    if (loading) {
       return <Loading />;
-    } else if (submitError) {
+    } else if (error) {
       return <Error />;
-    } else if (!submitLoading && !submitError) {
-      return <Form form={form} />;
+    } else if (!loading && !error) {
+      return <Form form={form} upload={fileUpload.upload} />;
     } else return null;
   };
 

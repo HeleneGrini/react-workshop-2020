@@ -7,7 +7,7 @@ export function FormListItem<
   }
 >(props: { form: T }) {
   const [open, setoOpen] = useState(false);
-  const { createdAt, ...rest } = props.form;
+  const { createdAt, picture, ...rest } = props.form;
   const entries = Object.entries(rest);
   const date = new firebase.firestore.Timestamp(
     props.form.createdAt.seconds,
@@ -32,12 +32,19 @@ export function FormListItem<
       </div>
 
       {open ? (
-        <div>
-          {entries.map((entry, i) => (
-            <div key={i}>
-              {entry[0]}: {entry[1]}
+        <div className="d-flex mt-3">
+          <div>
+            {entries.map((entry, i) => (
+              <div key={i}>
+                {entry[0]}: {entry[1]}
+              </div>
+            ))}
+          </div>
+          {picture.length ? (
+            <div className="ml-auto">
+              <img src={picture} width="100" height="150" />{" "}
             </div>
-          ))}
+          ) : null}
         </div>
       ) : null}
     </div>
