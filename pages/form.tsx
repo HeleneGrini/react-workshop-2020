@@ -5,7 +5,7 @@ import { Loading } from "../components/Loading";
 import { Form } from "../components/Form";
 import { useRouter } from "next/router";
 
-const initialValues = {
+const initialValues: Values = {
   name: "",
   email: "",
   phoneNumber: "",
@@ -15,7 +15,15 @@ const initialValues = {
   acceptTerms: false,
 };
 
-export type Values = typeof initialValues;
+export type Values = {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  birthDate: string;
+  picture: string;
+  sex: string;
+  acceptTerms: boolean;
+};
 
 export default () => {
   const [values, setValues] = useState(initialValues);
