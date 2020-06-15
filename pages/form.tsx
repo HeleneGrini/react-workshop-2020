@@ -1,9 +1,23 @@
-import { Input } from "../components/Input";
+import { useState, ChangeEvent } from "react";
+
+const initialValues = {
+  name: "",
+  email: "",
+  phoneNumber: "",
+  birthDate: new Date().toISOString().split("T")[0],
+  picture: "",
+  sex: "",
+  acceptTerms: false,
+};
 
 const Form = () => {
-  /**
-   * Start writing your form in here
-   */
+  const [values, setValues] = useState(initialValues);
+  const setFieldValue = (
+    key: keyof typeof values,
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    setValues({ ...values, [key]: e.target.value });
+  };
   return (
     <div className="container">
       <h1>Form</h1>
@@ -11,47 +25,101 @@ const Form = () => {
         method="post"
         onSubmit={(e) => {
           e.preventDefault();
-          console.log("submit");
+          console.log("submit", values);
         }}
       >
         <div className="d-flex flex-column">
-          <Input label="Navn" type="text" name="name" />
+          <label className="d-flex flex-column w-50">
+            <span className="mr-2">Navn</span>
+            <input
+              type="text"
+              name="name"
+              value={values.name}
+              onChange={(e) => setFieldValue("name", e)}
+            />
+          </label>
 
-          <Input label="E-post" type="email" name="email" />
-          <Input label="Telefonnummer" type="number" name="phoneNumber" />
-          <Input label="Fødselsdato" type="date" name="birthDate" />
+          <label className="d-flex flex-column w-50">
+            <span className="mr-2">E-post</span>
+            <input
+              type="email"
+              name="email"
+              value={values.email}
+              onChange={(e) => setFieldValue("email", e)}
+            />
+          </label>
 
-          <Input label="Last opp et portrettbile" type="file" name="picture" />
+          <label className="d-flex flex-column w-50">
+            <span className="mr-2">Telefonnummer</span>
+            <input
+              type="number"
+              name="phoneNumber"
+              value={values.phoneNumber}
+              onChange={(e) => setFieldValue("phoneNumber", e)}
+            />
+          </label>
+          <label className="d-flex flex-column w-50">
+            <span className="mr-2">Fødselsdato</span>
+            <input
+              type="date"
+              name="birthDate"
+              value={values.birthDate}
+              onChange={(e) => setFieldValue("birthDate", e)}
+            />
+          </label>
 
-          <Input
-            label="Kvinne"
-            labelAfter={true}
-            type="radio"
-            name="sex"
-            value="kvinne"
-          />
-          <Input
-            label="Kvinne"
-            labelAfter={true}
-            type="radio"
-            name="sex"
-            value="mann"
-          />
-          <Input
-            label="Kvinne"
-            labelAfter={true}
-            type="radio"
-            name="sex"
-            value="other"
-          />
+          <label className="d-flex flex-column w-50">
+            <span className="mr-2">Last opp et portrettbile</span>
+            <input
+              type="file"
+              name="picture"
+              value={values.picture}
+              onChange={(e) => setFieldValue("picture", e)}
+            />
+          </label>
 
-          <Input
-            label="Godta vilkår"
-            type="checkbox"
-            name="picture"
-            value="acceptTerms"
-            labelAfter={true}
-          />
+          <label className="d-flex align-items-center w-50">
+            <input
+              className="mr-2"
+              type="radio"
+              name="sex"
+              value="kvinne"
+              onChange={(e) => setFieldValue("sex", e)}
+            />
+            Kvinne
+          </label>
+          <label className="d-flex align-items-center w-50">
+            <input
+              className="mr-2"
+              type="radio"
+              name="sex"
+              value="mann"
+              onChange={(e) => setFieldValue("sex", e)}
+            />
+            Mann
+          </label>
+          <label className="d-flex align-items-center w-50">
+            <input
+              className="mr-2"
+              type="radio"
+              name="sex"
+              value="other"
+              onChange={(e) => setFieldValue("sex", e)}
+            />
+            Annet
+          </label>
+
+          <label className="d-flex align-items-center w-50">
+            <input
+              className="mr-2"
+              type="checkbox"
+              name="sex"
+              value="acceptTerms"
+              onChange={(e) => setFieldValue("acceptTerms", e)}
+              checked={values.acceptTerms}
+            />
+            Godta vilkår
+          </label>
         </div>
 
         <button className="btn btn-primary btn-sm">Submit</button>
