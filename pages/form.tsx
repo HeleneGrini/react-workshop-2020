@@ -34,13 +34,22 @@ const Form = () => {
     }
   };
 
+  const submitForm = async () =>
+    fetch("api/form", {
+      method: "POST",
+      body: JSON.stringify(values),
+    });
+
+  const resetForm = () => setValues(initialState);
+
   return (
     <div className="container">
       <h1>Form</h1>
       <form
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
-          console.log("submit");
+          await submitForm();
+          resetForm();
         }}
       >
         <div className="d-flex flex-column">
