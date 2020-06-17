@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Form } from "../components/Form";
 import { Loading } from "../components/Loading";
 import { Error } from "../components/Error";
 import { Success } from "../components/Success";
+import { useRouter } from "next/router";
 
 export interface Values {
   name: string;
@@ -14,7 +15,7 @@ export interface Values {
   acceptTerms: boolean;
 }
 
-const initialState: Values = {
+export const initialState: Values = {
   name: "",
   email: "",
   phoneNumber: "",
@@ -24,13 +25,11 @@ const initialState: Values = {
   acceptTerms: false,
 };
 const FormPage = () => {
-  /**
-   * Start writing your form in here
-   */
   const [values, setValues] = useState<Values>(initialState);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [response, setResponse] = useState(undefined);
+  const router = useRouter();
 
   const setFieldValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.type === "checkbox") {
@@ -53,22 +52,28 @@ const FormPage = () => {
     setLoading(false);
   };
 
+  useEffect(() => {
+    if (!error && response) {
+      router.push("/forms");
+    }
+  }, [error, response]);
+
   const renderBody = () => {
     if (loading) {
       return <Loading />;
     } else if (error) {
       return <Error />;
-    } else if (!error && response) {
-      return <Success />;
+    } else if (!response) {
+      return (
+        <Form
+          submitForm={submitForm}
+          resetForm={resetForm}
+          setFieldValue={setFieldValue}
+          values={values}
+        />
+      );
     }
-    return (
-      <Form
-        submitForm={submitForm}
-        resetForm={resetForm}
-        setFieldValue={setFieldValue}
-        values={values}
-      />
-    );
+    return null;
   };
   return (
     <div className="container">
