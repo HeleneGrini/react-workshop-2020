@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { Input } from "../components/Input";
+import { Form } from "../components/Form";
+import { Loading } from "../components/Loading";
+import { Error } from "../components/Error";
+import { Success } from "../components/Success";
 
-interface Values {
+export interface Values {
   name: string;
   email: string;
   phoneNumber: string;
@@ -20,11 +23,14 @@ const initialState: Values = {
   gender: "",
   acceptTerms: false,
 };
-const Form = () => {
+const FormPage = () => {
   /**
    * Start writing your form in here
    */
   const [values, setValues] = useState<Values>(initialState);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+  const [response, setResponse] = useState(undefined);
 
   const setFieldValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.type === "checkbox") {
@@ -33,97 +39,43 @@ const Form = () => {
       return setValues({ ...values, [e.target.name]: e.target.value });
     }
   };
-
-  const submitForm = async () =>
-    fetch("api/form", {
-      method: "POST",
-      body: JSON.stringify(values),
-    });
-
   const resetForm = () => setValues(initialState);
 
+  const submitForm = async () => {
+    setLoading(true);
+    await fetch("api/form", {
+      method: "POST",
+      body: JSON.stringify(values),
+    })
+      .then((r) => r.json())
+      .then((data) => setResponse(data))
+      .catch((err) => setError(true));
+    setLoading(false);
+  };
+
+  const renderBody = () => {
+    if (loading) {
+      return <Loading />;
+    } else if (error) {
+      return <Error />;
+    } else if (!error && response) {
+      return <Success />;
+    }
+    return (
+      <Form
+        submitForm={submitForm}
+        resetForm={resetForm}
+        setFieldValue={setFieldValue}
+        values={values}
+      />
+    );
+  };
   return (
     <div className="container">
       <h1>Form</h1>
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault();
-          await submitForm();
-          resetForm();
-        }}
-      >
-        <div className="d-flex flex-column">
-          <Input
-            label="Name"
-            type="text"
-            name="name"
-            value={values.name}
-            onChange={setFieldValue}
-          />
-          <Input
-            label="Epost"
-            type="email"
-            name="email"
-            value={values.email}
-            onChange={setFieldValue}
-          />
-          <Input
-            label="Phone number"
-            type="number"
-            name="phoneNumber"
-            value={values.phoneNumber}
-            onChange={setFieldValue}
-          />
-          <Input
-            label="Fødselsdato"
-            type="date"
-            name="birthDate"
-            value={values.birthDate}
-            onChange={setFieldValue}
-          />
-          <Input
-            label="Picture"
-            type="file"
-            name="picture"
-            value={values.picture}
-            onChange={setFieldValue}
-          />
-          ¨
-          <div className="d-flex flex-column ">
-            <Input
-              label="Kvinne"
-              type="radio"
-              name="gender"
-              value="kvinne"
-              onChange={setFieldValue}
-            />
-            <Input
-              label="Mann"
-              type="radio"
-              name="gender"
-              value="mann"
-              onChange={setFieldValue}
-            />
-            <Input
-              label="Ikke binær"
-              type="radio"
-              name="gender"
-              value="nonBinary"
-              onChange={setFieldValue}
-            />
-          </div>
-          <Input
-            label="Godta vilkår"
-            type="checkbox"
-            name="acceptTerms"
-            checked={values.acceptTerms}
-            onChange={setFieldValue}
-          />
-        </div>
-        <button className="btn btn-primary btn-sm">Submit</button>
-      </form>
+      {renderBody()}
     </div>
   );
 };
 
-export default Form;
+export default FormPage;
